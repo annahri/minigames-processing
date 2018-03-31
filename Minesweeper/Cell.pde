@@ -25,13 +25,13 @@ class Cell {
   }
     
   void Show() {
-    
-    noStroke();
     if (this.revealed) col = color(180, alpha);
     else {
       if (this.Intersects(mouseX, mouseY)) col = color(defcolor, 200);
       else col = color(defcolor, alpha);
     }
+    
+    noStroke();
     fill(col);
     rect(this.x, this.y, this.s, this.s);
     
@@ -50,7 +50,7 @@ class Cell {
     }
     
     if (mousePressed && this.Intersects(mouseX, mouseY)) {
-      this.Reveal();      
+      this.Reveal();
     }    
   }
 }

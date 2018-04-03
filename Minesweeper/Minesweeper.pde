@@ -1,18 +1,20 @@
 Cell[][] cells;
-final int dim = 15;
+StopWatchTimer timer;
+//Button playButton;
+final int dim = 10;
 final float xStart = 10;
 final float yStart = 30;
 final float offset = 2;
-final int bombs = 50;
+final int bombs =10;
+int startTime = 0;
+int time = 0;
 float s;
-boolean begun = false;
+//boolean started = false;
+//boolean menu = true;
 
-void setup() {
-  background(255);
-  size(500, 550);
-
+void init() {    
   s = (width - xStart*2) / dim;
-
+  timer = new StopWatchTimer();
   cells = new Cell[dim][dim];
 
   for (int i = 0; i < dim; i++) {
@@ -27,8 +29,38 @@ void setup() {
   CalculateNeighbors();
 }
 
-void draw() {
+void setup() {
   background(255);
+  size(500, 520);
+  init();
+}
+
+void draw() {
+  Start();
+}
+
+void mousePressed() {
+  if (!timer.running) {
+    timer.start();
+  }
+  
+  if (mouseButton == LEFT) {
+    for (int i = 0; i < dim; i++) {
+      for (int j = 0; j < dim; j++) {
+        boolean intersected = cells[i][j].Intersects(mouseX, mouseY);
+        int val = cells[i][j].neighbors;
+  
+        if (intersected) {
+          if (val == 0) FloodFill(i, j);
+        }
+      }
+    }
+  }
+}
+
+
+void Start() {
+  background(255);  
   for (int i = 0; i < dim; i++) {
     for (int j = 0; j < dim; j++) {
       cells[i][j].Show();
@@ -49,18 +81,10 @@ void draw() {
   textAlign(LEFT);
   text(String.format("Bombs : %d", bombs), xStart, yStart-10);
   text(String.format("Dimension : %d x %d", dim, dim), xStart + 100, yStart-10);
-}
+  textAlign(RIGHT);
+  text(String.format("%d:%d", timer.minute(), timer.second()), width - 10, yStart - 10);
 
-void mousePressed() {
-  for (int i = 0; i < dim; i++) {
-    for (int j = 0; j < dim; j++) {
-      if (cells[i][j].Intersects(mouseX, mouseY)) {
-        if (cells[i][j].neighbors == 0) {
-          FloodFill(i, j);
-        }
-      }
-    }
-  }
+  //started = true;
 }
 
 void PopulateBombs() {
@@ -126,14 +150,18 @@ int CheckGame() {
 
 void FloodFill(int x, int y) {
   try {
-    if (cells[x][y].bomb) return;
-    else if (cells[x][y].revealed) return;    
-    else {
+    if (cells[x][y].bomb || cells[x][y].revealed) return; 
+    else if (cells[x][y].neighbors != 0) {
+      cells[x][y].Reveal();
+      return;
+    } else {
       cells[x][y].Reveal();
       FloodFill(x+1, y);
       FloodFill(x-1, y);
       FloodFill(x, y+1);
       FloodFill(x, y-1);
+      FloodFill(x+1, y+1);
+      FloodFill(x-1, y-1);
     }
   } 
   catch (ArrayIndexOutOfBoundsException e) {
@@ -142,7 +170,10 @@ void FloodFill(int x, int y) {
   return;
 }
 
-void GameOver(String text) {
+void GameOver(String text) {  
+  float x = width/2, y = height / 2;
+  
+  timer.stop();
   for (int i = 0; i < dim; i++) {
     for (int j = 0; j < dim; j++) {
       if (!cells[i][j].bomb) continue;
@@ -155,6 +186,35 @@ void GameOver(String text) {
   fill(255);
   textSize(40);
   textAlign(CENTER, CENTER);
-  text(text, width / 2, height / 2);
+  text(text, x, y - 20);
+  textSize(15);
+  text(String.format("Time : %d minute %d seconds", timer.minute(), timer.second()), x, y + 20);
   noLoop();
 }
+
+//void Restart() {
+//  init();
+//  loop();
+//}
+
+//void Menu() {
+//  float x = width / 2, y = height / 2;  
+//  float w = 100, h = 30;
+//  playButton = new Button(x - w/2, y, w, h);
+//  playButton.backColor = color(255);
+//  playButton.textColor = color(0);
+//  playButton.textSize = 14;
+//  playButton.text = "Play";
+
+//  fill(0);
+//  rect(0, 0, width, height);
+//  fill(255);
+//  textSize(40);
+//  textAlign(CENTER);
+//  text("Minesweeper!", x, y - 20);
+//  playButton.Show();
+//  playButton.Update();
+//  if (playButton.command) {
+//    menu = false;
+//  }
+//}

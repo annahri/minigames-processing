@@ -50,7 +50,9 @@ class Cell {
     }
     
     if (mousePressed && this.Intersects(mouseX, mouseY)) {
-      this.Reveal();
+      if (mouseButton == LEFT) {
+        this.Reveal();
+      }
     }    
   }
 }

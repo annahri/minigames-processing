@@ -1,4 +1,4 @@
 # Minesweeper
 
-![image](/ss1.png)
-![image](/ss2.png)
+![image](/Minesweeper/ss1.png)
+![image](/Minesweeper/ss2.png)

@@ -3,7 +3,7 @@ class Button {
   float x, y, bx, by, w, h;
   color textColor = 0, backColor = 0;
   float textSize = 12;  
-  boolean command = false;
+  boolean command = false;  
   
   Button(float x, float y, float w, float h) {
     this.bx = x;

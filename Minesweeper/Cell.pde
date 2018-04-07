@@ -1,6 +1,7 @@
 class Cell {
   float x, y, cx, cy, s;
   int neighbors = 0, defcolor = 100, alpha = 100;
+  int status = 0;
   color col = color(defcolor, alpha);
   boolean bomb = false, revealed = false;
   
@@ -23,6 +24,11 @@ class Cell {
   void Reveal() {
     this.revealed = true;
   }
+  
+  void ChangeStatus() {    
+    this.status++;
+    if (this.status > 2) this.status = 0;
+  }
     
   void Show() {
     if (this.revealed) col = color(180, alpha);
@@ -34,6 +40,12 @@ class Cell {
     noStroke();
     fill(col);
     rect(this.x, this.y, this.s, this.s);
+    
+    // Debug
+    //fill(0);
+    //textSize(this.s / 3);
+    //textAlign(CENTER);
+    //text(this.bomb ? "b" : "", this.cx, this.cy);
     
     if (this.revealed) {
       if (this.neighbors == -1 || this.bomb) {
@@ -47,11 +59,25 @@ class Cell {
           text(this.neighbors, this.cx, this.cy);
         }
       }
-    }
-    
+    } else {
+      switch (this.status) {
+        case 1:  
+          fill(255, 0, 0);
+          textSize(this.s);
+          textAlign(CENTER, CENTER);
+          text("!", this.cx, this.cy-5);
+          break;
+        case 2:  
+          fill(0, 0, 255);
+          textSize(this.s);
+          textAlign(CENTER, CENTER);          
+          text("?", this.cx, this.cy-5);
+          break;
+      }
+    }    
     if (mousePressed && this.Intersects(mouseX, mouseY)) {
       if (mouseButton == LEFT) {
-        this.Reveal();
+        if (this.status == 0) this.Reveal();
       }
     }    
   }
